@@ -4,6 +4,7 @@ import { useState, FormEvent } from "react";
 export default function Register() {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [message, setMessage] = useState<string>("");
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -12,15 +13,17 @@ export default function Register() {
     const res = await fetch("/api/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email }),
+      body: JSON.stringify({ name, email, password }),
     });
 
     if (res.ok) {
       setMessage("Registration successful!");
       setName("");
       setEmail("");
+      setPassword("");
     } else {
-      setMessage("Registration failed. Please try again.");
+      const data = await res.json();
+      setMessage(data.error || "Registration failed. Please try again.");
     }
   };
 
@@ -51,6 +54,19 @@ export default function Register() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Password:
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
