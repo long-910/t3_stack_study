@@ -1,28 +1,27 @@
-import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
-  const { name, email, password } = await req.json();
+  const { email, password, name, postalCode, address } = await req.json();
 
-  if (!name || !email || !password) {
-    return NextResponse.json({ error: "Name, email, and password are required" }, { status: 400 });
-  }
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    // パスワードをハッシュ化
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // ユーザーをデータベースに保存
-    const newUser = await prisma.user.create({
-      data: { name, email, password: hashedPassword },
+    const user = await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        name,
+        postalCode,
+        address,
+      },
     });
 
-    return NextResponse.json(newUser, { status: 201 });
+    return NextResponse.json({ message: "User registered successfully" }, { status: 201 });
   } catch (error) {
-    console.error("Database error:", error);
     return NextResponse.json({ error: "Failed to register user" }, { status: 500 });
   }
 }
