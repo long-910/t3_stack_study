@@ -18,6 +18,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
+  const [showMenu, setShowMenu] = useState(false); // プロフィールメニューの表示状態
 
   useEffect(() => {
     // ログイン状態を確認
@@ -34,6 +35,7 @@ export default function RootLayout({
     localStorage.removeItem("token");
     setIsLoggedIn(false);
     setUsername(null);
+    setShowMenu(false); // メニューを閉じる
   };
 
   return (
@@ -45,26 +47,49 @@ export default function RootLayout({
             <h1 className="text-lg font-bold">
               <Link href="/">Gym Membership</Link>
             </h1>
-            <div className="space-x-4">
+            <div className="relative">
               {isLoggedIn ? (
                 <>
-                  <span>Welcome, {username}</span>
                   <button
-                    onClick={handleLogout}
-                    className="hover:underline text-red-300"
+                    onClick={() => setShowMenu(!showMenu)}
+                    className="hover:underline"
                   >
-                    Logout
+                    {username}
                   </button>
+                  {showMenu && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg">
+                      <Link
+                        href="/profile"
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setShowMenu(false)}
+                      >
+                        Profile
+                      </Link>
+                      <Link
+                        href="/members"
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setShowMenu(false)}
+                      >
+                        Members
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
                 </>
               ) : (
-                <>
+                <div className="space-x-4">
                   <Link href="/register" className="hover:underline">
                     Register
                   </Link>
                   <Link href="/login" className="hover:underline">
                     Login
                   </Link>
-                </>
+                </div>
               )}
             </div>
           </div>
