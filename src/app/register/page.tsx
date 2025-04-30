@@ -1,29 +1,31 @@
 "use client";
-import { useState, FormEvent } from "react";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 export default function Register() {
-  const [name, setName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [message, setMessage] = useState<string>("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const res = await fetch("/api/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ email, password, name }),
     });
 
+    const data = await res.json();
+
     if (res.ok) {
-      setMessage("Registration successful!");
-      setName("");
-      setEmail("");
-      setPassword("");
+      toast.success("Registration successful! Please log in.");
+      router.push("/login"); // ログインページにリダイレクト
     } else {
-      const data = await res.json();
-      setMessage(data.error || "Registration failed. Please try again.");
+      toast.error(data.error || "Registration failed. Please try again.");
     }
   };
 
@@ -78,17 +80,6 @@ export default function Register() {
             Register
           </button>
         </form>
-        {message && (
-          <p
-            className={`mt-4 text-center text-sm ${
-              message.includes("successful")
-                ? "text-green-600"
-                : "text-red-600"
-            }`}
-          >
-            {message}
-          </p>
-        )}
       </div>
     </div>
   );
