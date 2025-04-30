@@ -1,17 +1,18 @@
 "use client";
-import { useState, FormEvent } from "react";
+
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import { useAuth } from "~/context/AuthContext";
 
 export default function Login() {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { login } = useAuth(); // AuthContextからlogin関数を取得
   const router = useRouter();
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const toastId = toast.loading("Logging in...");
 
     const res = await fetch("/api/login", {
       method: "POST",
@@ -22,11 +23,11 @@ export default function Login() {
     const data = await res.json();
 
     if (res.ok) {
-      toast.success("Login successful!", { id: toastId });
-      localStorage.setItem("token", data.token);
-      router.push("/members");
+      toast.success("Login successful!");
+      login(data.token); // グローバル状態を更新
+      router.push("/members"); // メンバーページに遷移
     } else {
-      toast.error(data.error || "Login failed. Please try again.", { id: toastId });
+      toast.error(data.error || "Login failed. Please try again.");
     }
   };
 
