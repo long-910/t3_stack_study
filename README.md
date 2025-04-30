@@ -81,11 +81,11 @@ src/
 
 ### Registration Page
 
-![Registration Page](https://via.placeholder.com/800x400?text=Registration+Page)
+![Registration Page](https://github.com/user-attachments/assets/eae5b84d-64c3-4549-9e4c-708d01e95573)
 
 ### Member List Page
 
-![Member List Page](https://via.placeholder.com/800x400?text=Member+List+Page)
+![Member List Page](https://github.com/user-attachments/assets/b8071c9e-470b-4c75-b200-dea383511331)
 
 ---
 
