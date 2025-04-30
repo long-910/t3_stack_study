@@ -1,21 +1,50 @@
-import { PrismaClient } from "@prisma/client";
+"use client";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
-const prisma = new PrismaClient();
+export default function MembersPage() {
+  const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-async function getMembers() {
-  // データベースから会員情報を取得
-  const members = await prisma.user.findMany({
-    select: {
-      id: true,
-      name: true,
-      email: true,
-    },
-  });
-  return members;
-}
+  useEffect(() => {
+    const token = localStorage.getItem("token");
 
-export default async function MembersPage() {
-  const members = await getMembers();
+    if (!token) {
+      toast.error("You must be logged in to view this page.");
+      router.push("/login");
+      return;
+    }
+
+   // toast.loading("Fetching members...");
+
+    fetch("/api/members", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Unauthorized");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setMembers(data);
+        setLoading(false);
+        toast.dismiss();
+        toast.success("Members loaded successfully!");
+      })
+      .catch(() => {
+        toast.error("Failed to fetch members. Redirecting to login...");
+        router.push("/login");
+      });
+  }, [router]);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">

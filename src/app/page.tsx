@@ -15,10 +15,10 @@ export default function Home() {
             Register Now
           </Link>
           <Link
-            href="/members"
+            href="/login"
             className="px-6 py-3 text-white bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            View Members
+            Login
           </Link>
         </div>
       </div>
